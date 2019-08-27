@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #c1{
+            border: 1px solid black;
+            /* width: 300px;
+            height:400px; */
+        }
+    </style>
+    <script>
+        function d2a(n){
+            return Math.PI*n/180;
+        }
+        
+        window.onload = function(){
+            var canvas = document.getElementById('c1');
+var ctx = canvas.getContext('2d');
+ctx.fillStyle="green"
+ctx.arc(100,100,30,0,2*Math.PI)
+ctx.fill()
+
+    //2.监听鼠标的移动
+canvas.onmousedown = function (event){
+        //清屏操作
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        //开启路径
+        // ctx.beginPath();
+        //起点
+        ctx.moveTo(event.offsetX, event.offsetY);
+        canvas.onmousemove = function (event){
+            //终点
+            ctx.lineTo(event.offsetX, event.offsetY);
+
+            //设置颜色和线宽
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 5;
+            //绘制 描边
+            ctx.stroke();
+        };
+        canvas.onmouseup = function (){
+            // ctx.closePath();
+            canvas.onmousemove = null;
+            canvas.onmouseup = null;
+            
+        };
+
+    };
+//             var ctx = document.getElementById('c1').getContext('2d');
+// var offset = 0;
+// // ctx.moveTo(100,100);
+// ctx.fillText('text3234234',100,100);//实心文本
+
+// ctx.fill()
+// ctx.font='30px Arial';
+// ctx.strokeText('text',120,120);
+// ctx.stroke()
+// function draw() {
+//   ctx.clearRect(0,0, 800, 600);
+//   ctx.setLineDash([4,2,8,]);
+//   ctx.lineDashOffset = -offset;
+//   ctx.strokeRect(10,10, 100, 100);
+// }
+
+// function march() {
+//   offset++;
+//   if (offset > 16) {
+//     offset = 0;
+//   }
+//   draw();
+// //   setTimeout(march, 20);
+// }
+
+// march();
+            // var oC = document.getElementById('c1');
+            // var gd = oC.getContext('2d');
+            // gd.beginPath();
+            // gd.fillStyle = 'red';
+            // gd.fillRect(100,100,50,50);
+            // gd.beginPath();
+            // gd.fillStyle = 'green';
+            // gd.fillRect(200,100,50,50);
+
+            // gd.beginPath();
+            // gd.fillStyle = 'blue';
+            // gd.fillRect(300,100,50,50);
+
+            // gd.fillRect(100,200,50,50);
+            // gd.fillRect(200,200,50,50);
+            // gd.fillRect(300,200,50,50);
+
+
+        };
+    </script>
+</head>
+<body>
+    <canvas id="c1"></canvas>
+</body>
+</html>

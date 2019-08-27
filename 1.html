@@ -1,0 +1,296 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <meta charset="UTF-8" />
+  <head>
+    <style>
+      body {
+        /* background-color: #a677cc; */
+        margin: 0px;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      table tr {
+        border: 1px solid black;
+      }
+      table td {
+        border: 1px solid black;
+        width: 20px;
+        height: 20px;
+        /* text-align: center; */
+      }
+
+      .chess-white:after {
+        content: "";
+        display: block;
+        background: white;
+        margin-top: 1px;
+        width: 16px;
+        height: 16px;
+        border: 1px solid black;
+        border-radius: 100%;
+      }
+      .chess-black:after {
+        content: "";
+        background: black;
+        display: block;
+        margin-top: 1px;
+        width: 16px;
+        height: 16px;
+        border: 1px solid white;
+        border-radius: 100%;
+      }
+      .dot {
+        /* text-align: center; */
+      }
+      #container {
+        width: 176px;
+      }
+      .chess-box {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        background-color: darksalmon;
+        border: 1px solid white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container" style="display: inline-block"></div>
+    <canvas id="first" width="240" height="240" style="display: inline-block;margin-left:20px;"></canvas>
+    <script>
+      class Pattern {
+        constructor(map) {
+          this.map = map || [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 2, 1, 0, 0, 0],
+            [0, 0, 0, 1, 2, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+          ];
+        }
+
+        move(i, j, color, checkOnly) {
+          if (this.map[i][j] !== 0) return false;
+          let moveSuccess = false;
+          let directions = [
+            { x: -1, y: 0 },
+            { x: 1, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: -1 },
+            { x: -1, y: 1 },
+            { x: 1, y: 1 },
+            { x: -1, y: -1 },
+            { x: 1, y: -1 }
+          ];
+
+          for (let direction of directions) {
+            let [y, x] = [i, j];
+            let canmove = false;
+
+            while (true) {
+              x += direction.x;
+              y += direction.y;
+
+              if (x < 0 || x >= 8 || y < 0 || y >= 8) {
+                canmove = false;
+                break;
+              }
+
+              if (this.map[y][x] == 3 - color) {
+                canmove = true;
+              } else if (this.map[y][x] == color) {
+                break;
+              } else if (this.map[y][x] == 0) {
+                canmove = false;
+                break;
+              }
+            }
+
+            moveSuccess = moveSuccess || canmove;
+            if (canmove && !checkOnly) {
+              while (true) {
+                x -= direction.x;
+                y -= direction.y;
+                this.map[y][x] = color;
+                if (x == j && y == i) {
+                  break;
+                }
+              }
+            }
+          }
+
+          return moveSuccess;
+        }
+
+        checkPass(color) {
+          for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+              if (this.move(i, j, color, true)) {
+                return false;
+              }
+            }
+          }
+          return true;
+        }
+      }
+
+      class Game {
+        constructor(color = 1, map = null) {
+          this.color = color;
+          this.pattern = new Pattern(map);
+        }
+
+        move(i, j) {
+          if (this.pattern.move(i, j, this.color, false)) {
+            this.color = 3 - this.color;
+            if (this.pattern.checkPass(this.color)) {
+              console.log("pass");
+              this.color = 3 - this.color;
+              if (this.pattern.checkPass(this.color)) {
+                console.log("game over");
+              }
+            }
+            return true;
+          }
+          return false;
+        }
+          //画棋子
+        oneStep(context,i,j,color){
+            // debugger;
+            context.beginPath();
+            //参数分别为 圆心x,y 半径 开始弧度 结束弧度 1*Math.PI半圆 2*Math.PI一个圆
+            context.arc(15 + i * 30, 15 + j * 30, 13, 0, 2 * Math.PI);//画圆
+            // context.closePath();
+            //渐变
+            var gradient = context.createRadialGradient(15 + i * 30 + 2, 15 + j * 30 - 2, 13, 15 + i * 30 + 2, 15 + j * 30 - 2, 0);
+
+            if(color=='black'){
+                gradient.addColorStop(0,'#0a0a0a');
+                gradient.addColorStop(1,'#636766');
+            }else{
+                gradient.addColorStop(0,'#d1d1d1');
+                gradient.addColorStop(1,'#f9f9f9');
+            }
+            context.fillStyle = gradient;
+            context.fill();
+        }
+    
+      }
+
+      class View {
+        constructor(container, game) {
+          this.container = container;
+          this.fragment = document.createDocumentFragment();
+          this.game = game;
+        }
+
+        render() {
+          this.container.innerHTML = "";
+          for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+              const chessBox = document.createElement("div");
+              chessBox.className = "chess-box";
+              this.fragment.appendChild(chessBox);
+              const chess = this.game.pattern.map[i][j];
+              if (chess > 0) {
+                chessBox.className += `${
+                  chess === 2 ? " chess-white" : " chess-black"
+                }`;
+              }
+
+              chessBox.addEventListener("click", () => {
+                if (this.game.move(i, j)) {
+                  this.render();
+                }
+              });
+            }
+          }
+          this.container.appendChild(this.fragment);
+        }
+        renderCanvas() {
+          let ctx = this.container.getContext('2d');
+          ctx.clearRect(0,0,240,240);
+          //2.设置常量
+          var marginWH = 30;//表示每一个格子之间的空格距离
+          //计算行和列
+          var row = canvas.height / marginWH;
+          var col = canvas.width / marginWH;
+          /*
+          * 绘制背景网格
+          * */
+          //3.绘制横线
+          for(var i = 0;i<=row;i++){
+              ctx.moveTo(0,i * marginWH);
+              ctx.lineTo(canvas.width,i * marginWH);
+          };
+          //绘制竖线
+          for(var i = 0;i<=col;i++){
+              ctx.moveTo(i * marginWH,0);
+              ctx.lineTo(i * marginWH,canvas.height);
+          };
+          //设置颜色
+          ctx.strokeStyle = 'red';
+          //设置线宽
+          ctx.lineWidth = 0.5;
+          //4.绘制 描边
+          ctx.stroke();
+          // this.game.oneStep(ctx,3,3,'white');
+          // this.game.oneStep(ctx,4,4,'white');
+          // this.game.oneStep(ctx,3,4,'black');
+          // this.game.oneStep(ctx,4,3,'black');
+          //指定起点
+         /* 圆弧 贝塞尔曲线
+         ctx.beginPath()
+          ctx.moveTo(50,0);
+          //前两个是控制点，后两个是终点
+          ctx.quadraticCurveTo(150,50,50,150);
+          ctx.strokeStyle="red";
+          ctx.lineWidth=20;
+          ctx.stroke();*/
+          for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+              const chess = this.game.pattern.map[i][j];
+              if (chess !== 0) {
+                this.game.oneStep(ctx,i,j,chess=='1'?'black':'white');
+              }
+
+              this.container.addEventListener("click", (e) => {
+                let x = e.offsetX;
+                let y = e.offsetY;
+                console.log(x,y)
+                var i = Math.floor(x / 30);
+                let j = Math.floor(y / 30);
+                if (this.game.move(i, j)) {
+                  this.renderCanvas();
+                }
+              });
+            }
+          }
+          // this.container.addEventListener('click',(e)=>{
+          //   let x = e.offsetX;
+          //   let y = e.offsetY;
+          //   console.log(x,y)
+          //   var i = Math.floor(x / 30);
+          //   let j = Math.floor(y / 30);
+          //   // _nowi = i;
+          //   // _nowj = j;
+          //   const chess = this.game.pattern.map[i][j];
+          //   if(chess === 0 && this.game.move(i, j)){
+          //     this.game.oneStep(ctx,i,j);
+          //   }
+          // })
+        }
+      }
+
+      const container = document.getElementById("container");
+      const canvas = document.getElementById("first");
+
+      new View(container, new Game()).render();
+      new View(canvas, new Game()).renderCanvas();
+    </script>
+
+  </body>
+</html>

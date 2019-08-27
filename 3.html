@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #c1{
+            border: 1px solid black;
+        }
+    </style>
+    <script>
+        function d2a(n){
+            return Math.PI*n/180;
+        }
+        window.onload = function(){
+            var oC = document.getElementById('c1');
+            var gd = oC.getContext('2d');
+            gd.strokeStyle = 'red';
+            var d = 0;
+            gd.lineWidth = 20;
+            // function draw(){
+            //     gd.clearRect(0,0,oC.width,oC.height);//这里是为了防止毛边
+            //     gd.beginPath();
+            //     gd.arc(200,200,100,d2a(0),d2a(d++),false);//每次都是重新画
+            //     gd.stroke();
+            //     window.requestAnimationFrame(draw);
+            // }
+            gd.beginPath();
+            gd.arc(300,300,50,0,2*Math.PI,true);//每次都是重新画
+            gd.fillStyle = 'blue';
+            gd.fill()
+            gd.beginPath();
+            gd.arc(300,300,30,0,2*Math.PI,true);
+            gd.fillStyle = 'green';
+            gd.fill()
+            // window.requestAnimationFrame(draw);//防止卡顿，不用定时器
+            window.requestAnimationFrame = (function(){
+                return  window.requestAnimationFrame       ||
+                        window.webkitRequestAnimationFrame ||
+                        window.mozRequestAnimationFrame    ||
+                        window.msRequestAnimationFrame     ||
+                        function(callback){
+                            window.setTimeout(callback, 1000 / 60);//低版本保险刷新频率
+                        };
+            })();
+
+        };
+    </script>
+</head>
+<body>
+    <canvas id="c1" width = '800' height="600"></canvas>
+</body>
+</html>

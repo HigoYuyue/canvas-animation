@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>document</title>
+<style>
+    *{
+        padding:0;
+        margin:0;
+    }
+    html,body{
+        width:100%;
+        height:100%;
+        overflow: hidden;
+    }
+    canvas{
+    }
+    span{
+        font-size: 50px;
+    }
+</style>
+<script>
+function rnd(n,m){
+    return parseInt(Math.random()*(m-n)+n);
+}
+function d2a(n){
+  return n*Math.PI/180;
+}
+window.onload=function(){
+    var c=document.getElementsByTagName('canvas')[0];
+    var W=document.documentElement.clientWidth;
+    var H=document.documentElement.clientHeight;
+    c.width=W;
+    c.height=H;
+  var posX = 0;
+  var posY = 0;
+  var iSpeedX = 8;
+  var iSpeedY = 8;
+  function draw(){
+    // console.log(rnd(0,100));
+    //准备画笔
+    var gd=c.getContext('2d');
+    gd.fillStyle='red';
+    gd.clearRect(0,0,W,H);
+    gd.beginPath();
+    posX+= iSpeedX;
+    posY+= iSpeedY;
+    if(posX+50>W){//注意arc是从圆心画的所以是50不是100
+      iSpeedX*=-1;
+    }
+    if(posY+50>H){
+      iSpeedY*=-1;
+    }
+    if(posX<50&&iSpeedX!=8){//注意arc是从圆心画的所以是50不是100
+      iSpeedX*=-1;
+    }
+    if(posY<50&&iSpeedY!=8){
+      iSpeedY*=-1;
+    }
+    gd.arc(posX,posY,50,d2a(0),d2a(360),false);
+    gd.fill();
+    window.requestAnimationFrame(draw);//这里用递归不然循环不起来，不用担心性能问题，我说没问题就没问题
+  }
+  window.requestAnimationFrame(draw);
+
+  //不处理requesAnimationFrame的兼容性就没法在实际项目中使用，因为兼容性太操蛋了
+  //使用了一个IIFEs,你不懂也没事 拿过去用就行了
+  window.requestAnimationFrame = (function(){
+    return  window.requestAnimationFrame       ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame    ||
+            window.msRequestAnimationFrame     ||
+            function(callback){
+              window.setTimeout(callback, 1000 / 60);//低版本保险刷新频率
+            };
+  })();
+};
+</script>
+</head>
+<body>
+<canvas width="800" height="500">
+    <span>你的浏览器不支持canvas</span>
+</canvas>
+</body>
+</html>

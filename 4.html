@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    #c1{border:1px solid black;}
+  </style>
+  <script type="text/javascript">
+    window.onload = function(){
+      var oC = document.getElementById('c1');
+      var gd =oC.getContext('2d');
+      gd.lineWidth = 20;
+      gd.strokeStyle = 'red';
+      gd.beginPath();
+      gd.moveTo(300,100);
+      gd.lineTo(300,300);
+      gd.stroke();
+      gd.strokeStyle = 'green';
+
+      // gd.beginPath(); //这个例子说明为什么用beginPath
+      gd.moveTo(100,100);
+      gd.lineTo(100,300);
+      gd.stroke();//这个时候stroke 影响了前一条线
+    };
+  </script>
+</head>
+<body>
+  <canvas id="c1" width="800" height="600"></canvas>
+</body>
+</html>
