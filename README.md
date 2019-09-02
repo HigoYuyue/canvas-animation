@@ -3,6 +3,8 @@
 - 矩形区域画布
 - 使用 javascript 画图
 - 可绘制路径、矩形、圆形、字符以及添加图像
+- `Canvas 绘图是一种像素级的位图绘图技术`
+- `在 canvas 中，一旦图形完成，就会被浏览器忘记。如果图形位置发生变化，那么整个屏幕需要重画，包括图形覆盖的对象`
 
 ### canvas 绘制基本说明
 - 坐标系，左上角 0，0。X向右增大，Y向下增大
@@ -210,11 +212,62 @@ function d2a(n){
 更多可查看[canvas](https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API/Tutorial/Applying_styles_and_colors)
 ### 踩坑指南
 [坑](https://segmentfault.com/a/1190000012527772)
-
+### 补充
+#### 浅析requestAnimationFrame原理
+##### 几个概念
+- 帧——就是影像动画中最小单位的单幅影像画面。 一帧就是一副静止的画面，连续的帧就形成动画。
+- 关键帧——任何动画要表现运动或变化，至少前后要给出两个不同的关键状态，而中间状态的变化和衔接电脑可以自动完成
+- 过渡帧——在两个关键帧之间，电脑自动完成过渡画面的帧叫做过渡帧
 待调研
-canvas 样式 宽高
+##### 使用 setTimeout 或 setInterval 等长的定时器循环 会带来的问题：
+- 即使是 ms 单位，也不能达到 ms 的准确性。因为js是单线程的，可能会发生阻塞
+- setTimeout 或 setInterval 的执行只是在内存中对图像属性进行改变，这个变化必须要等到屏幕下次刷新才会被更新到屏幕上。
+- 刷新频率受屏幕分辨率和屏幕尺寸的影响。setTimeout 或 setInterval 的执行步调和屏幕的刷新步调不一致，会引起丢帧
+##### `requestAnimationFrame原理说明`:
+- 最大优势是由系统来决定回调函数的执行时机。具体就是，如果屏幕的刷新频率是 60Hz，那回调函数就 16.7ms 执行一次
+- 使用 requestAnimationFrame 可以保证回调函数在屏幕每一次的刷新间隔中只被执行一次
+- 当页面不可见或不可用状态，刷新屏幕也被系统暂停，因而跟着系统步伐走的 requestAnimationFrame 也会停止渲染，页面激活则继续执行，有效节省 CPU 开销 
+[更多](https://juejin.im/post/5b6020b8e51d4535253b30d1)
 
-save restore
-requestAnimationFrame
+##### canvas css 设置宽高
+例：
+css 设置 width：450 height：300
+画布的默认大小是300*150
+那么相对于默认的比率分别为 1.5 和 2 
+此时：
+context.fillRect(0,0,100,100)
+画布上会出现一个150X200的长方形
 
-beginPath
+#### 理解 save restore 
+> 关键：
+Canvas为 我们提供了图层(Layer)的支持，而这些Layer(图层)是按"栈结构"来进行管理的
+![508da5803d7c81cfb48df4fd3bab6e4c.jpeg](evernotecid://32144DFA-56BA-424B-92B4-A6CC4E8E60A9/appyinxiangcom/24664158/ENResource/p58)
+
+- 当使用变换-旋转、缩放、位移 时，canvas 对应的坐标系特征会随之变化
+- `save和resotre主要是控制坐标系和样式特征的，restore只会把坐标系和样式特征还原，不会清除save之后绘制的元素。`
+- save是入栈，restore是出栈。
+- 如果不使用save、restore 就会在上一次的坐标处重复fill，可能会覆盖上一次画的
+
+#### 理解 beginPath closePath
+样例：
+```
+ctx.beginPath();
+  ctx.moveTo(100.5,20.5);//①
+ctx.lineTo(200.5,20.5);//②
+
+ctx.strokeStyle = 'black';
+ctx.stroke(); ctx.moveTo(100.5,40.5);//③
+    ctx.lineTo(200.5,40.5)//④
+    ctx.strokeStyle = 'red';
+    ctx.stroke();
+```
+结果：    
+![4de4559a0c13d7b81938570c92804697.png](evernotecid://32144DFA-56BA-424B-92B4-A6CC4E8E60A9/appyinxiangcom/24664158/ENResource/p60)
+
+结论：
+- canvas中的绘制方法（如stroke, fill），都会以“上一次beginPath”之后的所有路径为基础进行绘制。比如例2中stroke了两次，都是以第一次beginPath后的所有路径为基础画的。
+    - 第一次stroke：画①②，黑色
+    - 第二次stroke：画①②③④，红色（其中①②红色覆盖之前的黑色）
+- 不管你用moveTo把画笔移动到哪里，只要不beginPath，那你一直都是在画一条路径（注：此处『一条路径』并非指连在一起）
+fillRect与strokeRect这种直接画出独立区域的函数，也不会打断当前的path.
+
