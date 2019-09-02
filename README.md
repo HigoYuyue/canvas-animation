@@ -229,7 +229,7 @@ function d2a(n){
 - 当页面不可见或不可用状态，刷新屏幕也被系统暂停，因而跟着系统步伐走的 requestAnimationFrame 也会停止渲染，页面激活则继续执行，有效节省 CPU 开销 
 [更多](https://juejin.im/post/5b6020b8e51d4535253b30d1)
 
-##### canvas css 设置宽高
+#### canvas css 设置宽高
 例：
 css 设置 width：450 height：300
 画布的默认大小是300*150
