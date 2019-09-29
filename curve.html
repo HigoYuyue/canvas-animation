@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>angular velocity</title>
+</head>
+<body>
+    <canvas id="canvas" width="500" height="500" style="background:#000;">
+        your browser not support canvas
+    </canvas>
+    <script>
+      class Ball{
+        constructor(radius, color) {
+            this.x = 0;
+            this.y = 0;
+            this.vx = 0;
+            this.vy = 0;
+            this.radius = radius || 40;
+            this.color = color || 'orange';
+            this.mass = 1;
+            this.lineWidth = 1;
+        }
+        draw(ctx) {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.lineWidth = this.lineWidth;
+            ctx.fillStyle = this.color;
+            ctx.strokeStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(0, 0, this.radius, 0, Math.PI *2, false);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+      }
+       let gravity = 0.2;
+       window.onload = function(){
+           var canvas = document.getElementById("canvas");
+           var cxt = canvas.getContext("2d");
+           
+           var ball = new Ball();
+           ball.x = canvas.width/4;
+           ball.y = canvas.height/4;
+           
+           var angles = 90;
+           var speed = 1;
+           var time=0;
+           var vx = Math.cos(angles*Math.PI/180)*speed;
+           var vy = Math.sin(angles*Math.PI/180)*speed;
+           (function drawFrame(){
+               window.requestAnimationFrame(drawFrame, canvas);
+               
+               cxt.clearRect(0, 0, canvas.width, canvas.height);
+               drawNotChange(cxt);
+               cxt.save();
+               cxt.translate(200, 200)
+               cxt.rotate(time*8*Math.PI/180);
+               cxt.fillStyle='blue';
+               cxt.beginPath();
+                cxt.arc(0,150,30,0,2*Math.PI,false);
+                cxt.closePath();
+                cxt.fill();
+                cxt.restore();
+                time+=1;
+           }())
+           function drawNotChange(cxt){
+              cxt.fillStyle='red';
+              cxt.beginPath();
+              cxt.arc(200,200,30,0,2*Math.PI,true);
+              cxt.closePath();
+              cxt.fill();
+              cxt.beginPath();
+              cxt.arc(200,200,150,0,2*Math.PI,true);
+              cxt.strokeStyle='white';
+              cxt.closePath();
+              cxt.stroke();
+          }
+       }
+    </script>
+</body>
+</html>

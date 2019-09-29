@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="500"
+      height="500"
+      style="background:#000;"
+    ></canvas>
+    <script>
+      window.onload = function() {
+        var canvas = document.getElementById("canvas"),
+          context = canvas.getContext("2d"),
+          centerX = canvas.width / 2,
+          centerY = canvas.height / 2,
+          speed = 0.1;
+        let x = 200,
+          y = 200;
+        let reverse = false;
+
+        function blueCircle(i) {
+          context.save();
+          context.beginPath();
+          context.translate(10, y);
+          context.fillStyle = "#49f";
+          context.arc(i * 30, -Math.cos(i) * 30, 3, 0, Math.PI * 2, false);
+          context.fill();
+          context.restore();
+        }
+        function whiteAxis() {
+          context.save();
+          context.beginPath();
+          context.lineWidth = 1;
+          context.strokeStyle = "white";
+          context.moveTo(10, 20);
+          context.lineTo(0, 30);
+          context.moveTo(10, 20);
+          context.lineTo(10, 280);
+          context.moveTo(10, 20);
+
+          context.lineTo(20, 30);
+          context.moveTo(10, 200);
+          context.lineTo(400, 200);
+          context.lineTo(390, 190);
+          context.moveTo(400, 200);
+          context.lineTo(390, 210);
+          context.stroke();
+          context.restore();
+        }
+        function whiteCos() {
+          context.save();
+          context.beginPath();
+          context.translate(10, y);
+          context.strokeStyle = "white";
+          for (let i = 0; i < 4 * Math.PI; i += 0.1) {
+            context.lineTo(i * 30, -Math.cos(i) * 30);
+          }
+          context.stroke();
+          context.restore();
+        }
+        //  whiteAxis()
+        //  whiteCos();
+        (function drawFrame() {
+          window.requestAnimationFrame(drawFrame, canvas);
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          whiteAxis();
+          whiteCos();
+          blueCircle(speed);
+
+          if (speed > 4 * Math.PI) {
+            reverse = true;
+          }
+          if (speed <= 0) {
+            reverse = false;
+          }
+          if (reverse) {
+            speed -= 0.1;
+          } else {
+            speed += 0.1;
+          }
+        })();
+      };
+    </script>
+  </body>
+</html>
