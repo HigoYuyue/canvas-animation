@@ -138,7 +138,7 @@ ctx.setTransform(a,b,c,d,e,f) 方法，它不会相对于其他变换来发生�
 context.createPattern(image/canvas,'repeat|repeat-x|repeat-y|no-repeat');// image 规定要使用的模式的图片、画布或视频元素
 ```
 效果如下：
-![27ea503b9fec4faa1b8a9c5fdd3038e6.png](evernotecid://32144DFA-56BA-424B-92B4-A6CC4E8E60A9/appyinxiangcom/24664158/ENResource/p55)
+![add image](https://github.com/HigoYuyue/canvas-animation/blob/master/UNADJUSTEDNONRAW_mini_10.jpg)
 
 
 #### 样式相关
