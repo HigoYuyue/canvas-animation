@@ -242,7 +242,8 @@ context.fillRect(0,0,100,100)
 #### 理解 save restore 
 > 关键：
 Canvas为 我们提供了图层(Layer)的支持，而这些Layer(图层)是按"栈结构"来进行管理的
-![508da5803d7c81cfb48df4fd3bab6e4c.jpeg](evernotecid://32144DFA-56BA-424B-92B4-A6CC4E8E60A9/appyinxiangcom/24664158/ENResource/p58)
+
+![add image](https://github.com/HigoYuyue/canvas-animation/blob/master/UNADJUSTEDNONRAW_mini_11.jpg)
 
 - 当使用变换-旋转、缩放、位移 时，canvas 对应的坐标系特征会随之变化
 - `save和resotre主要是控制坐标系和样式特征的，restore只会把坐标系和样式特征还原，不会清除save之后绘制的元素。`
@@ -262,8 +263,9 @@ ctx.stroke(); ctx.moveTo(100.5,40.5);//③
     ctx.strokeStyle = 'red';
     ctx.stroke();
 ```
-结果：    
-![4de4559a0c13d7b81938570c92804697.png](evernotecid://32144DFA-56BA-424B-92B4-A6CC4E8E60A9/appyinxiangcom/24664158/ENResource/p60)
+结果： 
+
+![add image](https://github.com/HigoYuyue/canvas-animation/blob/master/UNADJUSTEDNONRAW_mini_12.jpg)
 
 结论：
 - canvas中的绘制方法（如stroke, fill），都会以“上一次beginPath”之后的所有路径为基础进行绘制。比如例2中stroke了两次，都是以第一次beginPath后的所有路径为基础画的。
